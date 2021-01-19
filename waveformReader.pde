@@ -19,6 +19,8 @@ boolean allowProcess = false;
 
 boolean detectionInverted = false;
 
+int samplingRate = 44100;
+
 void setup() {
   size(800, 600);
   drop = new SDrop(this);
@@ -61,10 +63,10 @@ void draw() {
     oscillation = sliders.get(2).value;
     filter = sliders.get(3).value;
     process();
-    image(im, 0, 0, width, height);
+    image(im, 0, 200, width, height-200);
     stroke(0, 0x80, 0, 0x80);
     noFill();
-    for (int x=0; x<mins.length; x++) line((float)x*width/mins.length, map(mins[x], -1, 1, height, 0), (float)x*width/mins.length, map(maxs[x], -1, 1, height, 0));
+    for (int x=0; x<mins.length; x++) line((float)x*width/mins.length, map(mins[x], -1, 1, height, 200), (float)x*width/mins.length, map(maxs[x], -1, 1, height, 200));
     for (Slider s : sliders) s.draw();
     text("CTRL : invert detection", 20, 140);
     text("TAB : export", 20, 170);
@@ -130,13 +132,13 @@ void export() {
   }
   double[][] resultWaveformStereo = new double[2][resultWaveform.length];
   for (int i=0; i<resultWaveform.length; i++) resultWaveformStereo[0][i] = resultWaveformStereo[1][i] = resultWaveform[i];
-  new WavFile(sketchPath("result.wav"), resultWaveformStereo);
+  new WavFile(sketchPath("result.wav"), resultWaveformStereo, samplingRate);
 }
 
 class Slider {
   String label;
   PVector pos;
-  PVector size = new PVector(200, 20);
+  PVector size = new PVector(500, 20);
   float min;
   float max;
   float value;
@@ -155,6 +157,12 @@ class Slider {
     rect(pos.x, pos.y, size.x, size.y);
     fill(0xC0, 0, 0xC0);
     textAlign(LEFT, TOP);
-    text(label+" : "+floor(value), pos.x+size.x+10, pos.y);
+    if (label.equals("sample length")) {
+      text(label+" : "+nf(value/samplingRate, -1, 2)+" seconds", pos.x+size.x+10, pos.y);
+    } else if (label.equals("oscillation")) {
+      text(label+" : "+nf(samplingRate/(value*2),-1,2)+" hz", pos.x+size.x+10, pos.y);
+    } else {
+      text(label+" : "+floor(value), pos.x+size.x+10, pos.y);
+    }
   }
 }

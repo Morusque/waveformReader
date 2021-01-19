@@ -354,8 +354,8 @@ class WavFile {
   public SamplingInfo samplingInfo;
   public Sample[][] samplesForChannels;
 
-  public WavFile (String filePath, double[][] samplesForChannels) {// stereo with default parameters, directly save
-    this.samplingInfo = new SamplingInfo("wave", 16, (short)1, (short)2, 44100, (short)16);
+  public WavFile (String filePath, double[][] samplesForChannels, int samplingRate) {// stereo with default parameters, directly save
+    this.samplingInfo = new SamplingInfo("wave", 16, (short)1, (short)2, samplingRate, (short)16);
     setSamplesFromDouble(samplesForChannels);
     writeToFilePath(filePath);
   }
